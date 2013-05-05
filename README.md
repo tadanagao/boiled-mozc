@@ -2,6 +2,7 @@ boiled-mozc
 ===========
 
 ゆでもずく!
+
 A wrapper to `mozc.el` that offers modeless ("boil"ed) input style.
 
 Synopsis
