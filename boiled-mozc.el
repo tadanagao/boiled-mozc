@@ -54,8 +54,9 @@
 ;; (http://usir.kobe-c.ac.jp/boiled-egg/) that "boil"s the EGG (Tamago
 ;; V3) input method, and his contributors;
 ;;
-;; Hiroaki Sengoku-san <sengoku@gcd.org> for his boiling-egg.el that is
-;; a total rewrite of boiled-egg.el to adapt it to Tamago V4; and
+;; Hiroaki Sengoku-san <sengoku@gcd.org> for his boiling-egg.el
+;; (http://www.gcd.org/sengoku/boiling-egg/) that is a total rewrite of
+;; boiled-egg.el to adapt it to Tamago V4; and
 ;;
 ;; Shunsuke OKANO-san <okano@pro.ics.tut.ac.jp> for his boiling-anthy.el
 ;; that is a version of boiling-egg.el modified for another Japanese
