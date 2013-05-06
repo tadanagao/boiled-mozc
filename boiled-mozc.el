@@ -70,15 +70,22 @@
 
 (require 'mozc)
 
-;;----
-
-(defvar boiled-mozc-input-method "japanese-mozc")
-(defvar boiled-mozc-target-chars "[]'.,a-zA-Z@-")
+;;
+;; Customization options.
+;;
 
 (defvar boiled-mozc-convert-key (kbd "SPC"))
+
 (defvar boiled-mozc-commit-key (kbd "<F6>RET"))
 
-;;----
+(defvar boiled-mozc-target-chars "[]'.,a-zA-Z@-")
+
+;;
+;; Internal variables.
+;;
+
+(defvar boiled-mozc-input-method "japanese-mozc"
+  "The input method name of Mozc.")
 
 (defvar boiled-mozc-running-type nil
   "boiled-mozc's running mode while calling mozc.el functions.
@@ -113,6 +120,8 @@ Used to detect when the conversion completed.")
       'inactivate-input-method
     'deactivate-input-method))
 
+;;
+;; Wrappers to mozc.el functions.
 ;;
 ;; Because mozc.el doesn't offer any kind of hook, we make heavy use of
 ;; advices to change its behavior.
@@ -167,6 +176,10 @@ boiled-mozc."
 	;; Conversion canceled.
 	(insert boiled-mozc-conv-original))))
 
+;;
+;; Internal functions.
+;;
+
 (defun boiled-mozc-search-beginning ()
   "Search backward from point for the beginning of a Romaji strip."
   (let* ((pos (point))
@@ -184,6 +197,11 @@ boiled-mozc."
     (setq boiled-mozc-conv-begin begin)
     (setq boiled-mozc-conv-original (buffer-substring begin pos))))
 
+;;
+;; Interactive conversion functions.
+;;
+
+;;;###autoload
 (defun boiled-mozc-rK-conv ()
   "Romaji to Kanji conversion."
   (interactive "*")
@@ -195,6 +213,7 @@ boiled-mozc."
   (mapc #'mozc-handle-event
 	(vconcat boiled-mozc-conv-original boiled-mozc-convert-key)))
 
+;;;###autoload
 (defun boiled-mozc-rhkR-conv ()
   "Romaji(Hankaku) - Hiragana - Katakana - Romaji(Zenkaku) cyclic conversion."
   (interactive "*")
