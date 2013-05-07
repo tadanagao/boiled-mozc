@@ -63,7 +63,6 @@
 ;; input method anthy.el.
 
 ;; ToDo:
-;; - defcustom
 ;; - Better handling of single ending n. (double-nn / append "'" / etc.?)
 
 ;;; Code:
@@ -74,11 +73,27 @@
 ;; Customization options.
 ;;
 
-(defvar boiled-mozc-convert-key (kbd "SPC"))
+(defgroup boiled-mozc nil
+  "Modeless input add-on for Mozc."
+  :group 'mozc
+  :prefix "boiled-mozc-")
 
-(defvar boiled-mozc-commit-key (kbd "<F6>RET"))
+(defcustom boiled-mozc-convert-key (kbd "SPC")
+  "Mozc key sequence to start Kana-Kanji conversion."
+  :type 'key-sequence
+  :group 'boiled-mozc)
 
-(defvar boiled-mozc-target-chars "[]'.,a-zA-Z@-")
+(defcustom boiled-mozc-commit-key (kbd "<f6> RET")
+  "Mozc key sequence to commit Hiragana form."
+  :type 'key-sequence
+  :group 'boiled-mozc)
+
+(defcustom boiled-mozc-target-chars "[]'.,a-zA-Z@-"
+  ;; XXX - needs more detailed description
+  "Characters to be converted to Hiragana or Kana-Kanji."
+  :type 'string
+  :link '(function-link skip-chars-forward)
+  :group 'boiled-mozc)
 
 ;;
 ;; Internal variables.
