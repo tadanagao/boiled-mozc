@@ -33,7 +33,7 @@
 
 ;; ゆでもずく!
 ;;
-;; boiled-mozc.el wraps("boil"s) mozc.el to offer modeless input style,
+;; boiled-mozc.el wraps ("boil"s) mozc.el to offer modeless input style,
 ;; where you can type a Romaji sequence without activating the Mozc
 ;; input method and then just hit \M-o or \C-o to obtain its Hiragana
 ;; and Kana-Kanji conversion, respectively.
@@ -47,7 +47,7 @@
 ;;   (global-set-key "\C-o" 'boiled-mozc-rK-conv)
 ;;   (global-set-key "\M-o" 'boiled-mozc-rhkR-conv)
 
-;; The idea of "boil" is based on respectable forerunners' works, thus
+;; The idea of "boil" is taken from respectable forerunners' works, thus
 ;; acknowledgments go to:
 ;;
 ;; Kin'ya Miura-san <miura@is.aist-nara.ac.jp> for his boiled-egg.el
@@ -89,9 +89,15 @@
   :group 'boiled-mozc)
 
 (defcustom boiled-mozc-target-chars "[]'.,a-zA-Z@-"
-  ;; XXX - needs more detailed description
-  "Characters to be converted to Hiragana or Kana-Kanji."
+  "Characters to be converted to Hiragana or Kana-Kanji.
+
+Boiled-mozc looks for the longest sequence of the specified characters
+ending at the point and hands it over to Mozc.
+
+This value is used as an argument of `skip-chars-backward'.  See
+its documentation and `skip-chars-forward' for details on the format."
   :type 'string
+  :link '(function-link skip-chars-backward)
   :link '(function-link skip-chars-forward)
   :group 'boiled-mozc)
 
@@ -105,7 +111,7 @@
 (defvar boiled-mozc-running-type nil
   "boiled-mozc's running mode while calling mozc.el functions.
 A value of nil means boiled-mozc isn't in effect, :Hiragana means
-Romaji-Hiragana conversion, and :Kanji means Kanji conversion.")
+Romaji-Hiragana conversion, and :Kanji means Kana-Kanji conversion.")
 (make-variable-buffer-local 'boiled-mozc-running-type)
 
 (defvar boiled-mozc-conv-original nil
@@ -114,19 +120,19 @@ Kept until the conversion finishes.")
 (make-variable-buffer-local 'boiled-mozc-conv-original)
 
 (defvar boiled-mozc-conv-begin nil
-  "The buffer position where the original Romaji strip in conversion begins.")
+  "The buffer position where the original Romaji strip begins.")
 (make-variable-buffer-local 'boiled-mozc-conv-begin)
 
 (defvar boiled-mozc-conv-type nil
   "Indicates the current form in cyclic conversion.
 Its value is maintained in `boiled-mozc-rhkR-conv' and referred to in
-`boiled-mozc-rK-conv'. Possible values are nil, :Hiragana, :Katakana and
+`boiled-mozc-rK-conv'.  Possible values are nil, :Hiragana, :Katakana and
 :RomajiZenkaku.")
 (make-variable-buffer-local 'boiled-mozc-conv-type)
 
 (defvar boiled-mozc-preedit nil
   "The content of Mozc's preedit area.
-Used to detect when the conversion completed.")
+Used to detect when conversion completed.")
 (make-variable-buffer-local 'boiled-mozc-preedit)
 
 ;; `inactivate-*' was renamed to `deactivate-*' on Emacs 24.3.
