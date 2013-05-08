@@ -69,9 +69,8 @@
 
 (require 'mozc)
 
-;;
-;; Customization options.
-;;
+
+;;;; Customization options.
 
 (defgroup boiled-mozc nil
   "Modeless input add-on for Mozc."
@@ -101,9 +100,8 @@ its documentation and `skip-chars-forward' for details on the format."
   :link '(function-link skip-chars-forward)
   :group 'boiled-mozc)
 
-;;
-;; Internal variables.
-;;
+
+;;;; Internal variables.
 
 (defvar boiled-mozc-input-method "japanese-mozc"
   "The input method name of Mozc.")
@@ -141,12 +139,11 @@ Used to detect when conversion completed.")
       'inactivate-input-method
     'deactivate-input-method))
 
-;;
-;; Wrappers to mozc.el functions.
-;;
+
+;;;; Wrappers to mozc.el functions.
+
 ;; Because mozc.el doesn't offer any kind of hook, we make heavy use of
 ;; advices to change its behavior.
-;;
 
 (defadvice mozc-candidate-update (around boiled-mozc-hide-candidates activate)
   "Hide the echo-area candidate list while and after conversion."
@@ -197,9 +194,8 @@ boiled-mozc."
 	;; Conversion canceled.
 	(insert boiled-mozc-conv-original))))
 
-;;
-;; Internal functions.
-;;
+
+;;;; Internal functions.
 
 (defun boiled-mozc-search-beginning ()
   "Search backward from point for the beginning of a Romaji strip."
@@ -218,9 +214,8 @@ boiled-mozc."
     (setq boiled-mozc-conv-begin begin)
     (setq boiled-mozc-conv-original (buffer-substring begin pos))))
 
-;;
-;; Interactive conversion functions.
-;;
+
+;;;; Interactive conversion functions.
 
 ;;;###autoload
 (defun boiled-mozc-rK-conv ()
@@ -261,6 +256,7 @@ boiled-mozc."
 	  (vconcat boiled-mozc-conv-original boiled-mozc-commit-key))
     (boiled-mozc-deactivate-input-method)
     (setq boiled-mozc-conv-type :Hiragana)))
+
 
 (provide 'boiled-mozc)
 
