@@ -117,9 +117,9 @@ Romaji-Hiragana conversion, and :Kanji means Kana-Kanji conversion.")
 Kept until the conversion finishes.")
 (make-variable-buffer-local 'boiled-mozc-conv-original)
 
-(defvar boiled-mozc-conv-begin nil
+(defvar boiled-mozc-conv-marker (make-marker)
   "The buffer position where the original Romaji strip begins.")
-(make-variable-buffer-local 'boiled-mozc-conv-begin)
+(make-variable-buffer-local 'boiled-mozc-conv-marker)
 
 (defvar boiled-mozc-conv-type nil
   "Indicates the current form in cyclic conversion.
@@ -171,18 +171,18 @@ Used to detect when conversion completed.")
 				     activate compile)
   "Check if Mozc finished conversion, in which case do some clean-ups for
 boiled-mozc."
-  (let ((start (point))
+  (let ((begin (point-marker))
 	(prev-preedit boiled-mozc-preedit))
     ad-do-it
     (when (eq boiled-mozc-running-type :Kanji)
-      (let ((str (buffer-substring start (point))))
+      (let ((str (buffer-substring begin (point))))
 	(when (and (> (length str) 0)
 		   (string= prev-preedit str))
 	  ;; Conversion completed
 	  (mozc-clean-up-changes-on-buffer)
 	  (when boiled-mozc-preedit
-	    ;; Another key was pressed. The event must be re-cast with
-	    ;; the input method deactivated.
+	    ;; A key possibly expected to be inserted was pressed. The
+	    ;; event must be re-cast with the input method deactivated.
 	    (setq boiled-mozc-preedit nil)
 	    (mozc-fall-back-on-default-binding event))))))
   (when (and (not mozc-preedit-in-session-flag)
@@ -190,7 +190,7 @@ boiled-mozc."
     (mozc-clean-up-changes-on-buffer)
     (boiled-mozc-deactivate-input-method)
     (setq boiled-mozc-running-type nil)
-    (if (eq boiled-mozc-conv-begin (point))
+    (if (eq (marker-position boiled-mozc-conv-marker) (point))
 	;; Conversion canceled.
 	(insert boiled-mozc-conv-original))))
 
@@ -211,7 +211,7 @@ boiled-mozc."
 		    (if (skip-chars-backward boiled-mozc-target-chars bol)
 			(throw 'begin (point))))
 		  pos)))
-    (setq boiled-mozc-conv-begin begin)
+    (set-marker boiled-mozc-conv-marker begin)
     (setq boiled-mozc-conv-original (buffer-substring begin pos))))
 
 
@@ -221,9 +221,10 @@ boiled-mozc."
 (defun boiled-mozc-rK-conv ()
   "Romaji to Kanji conversion."
   (interactive "*")
-  (unless (and (eq last-command 'boiled-mozc-rhkR-conv) boiled-mozc-conv-type)
+  (unless (and (eq last-command 'boiled-mozc-rhkR-conv)
+	       boiled-mozc-conv-type)
     (boiled-mozc-search-beginning))
-  (delete-region boiled-mozc-conv-begin (point))
+  (delete-region boiled-mozc-conv-marker (point))
   (setq boiled-mozc-running-type :Kanji)
   (activate-input-method boiled-mozc-input-method)
   (mapc #'mozc-handle-event
@@ -233,29 +234,29 @@ boiled-mozc."
 (defun boiled-mozc-rhkR-conv ()
   "Romaji(Hankaku) - Hiragana - Katakana - Romaji(Zenkaku) cyclic conversion."
   (interactive "*")
-  (if (and (eq last-command this-command) boiled-mozc-conv-type)
-      (let ((begin boiled-mozc-conv-begin))
-	(cond
-	 ((eq boiled-mozc-conv-type :Hiragana)
-	  (japanese-katakana-region begin (point))
-	  (setq boiled-mozc-conv-type :Katakana))
-	 ((eq boiled-mozc-conv-type :Katakana)
-	  (delete-region begin (point))
-	  (insert boiled-mozc-conv-original)
-	  (japanese-zenkaku-region begin (point))
-	  (setq boiled-mozc-conv-type :RomajiZenkaku))
-	 ((eq boiled-mozc-conv-type :RomajiZenkaku)
-	  (japanese-hankaku-region begin (point))
-	  (setq boiled-mozc-conv-type nil))
-	 ))
+  (cond
+   ((or (not (eq last-command this-command))
+	(null boiled-mozc-conv-type))
     (boiled-mozc-search-beginning)
     (setq boiled-mozc-running-type :Hiragana)
-    (delete-region boiled-mozc-conv-begin (point))
+    (delete-region boiled-mozc-conv-marker (point))
     (activate-input-method boiled-mozc-input-method)
     (mapc #'mozc-handle-event
 	  (vconcat boiled-mozc-conv-original boiled-mozc-commit-key))
     (boiled-mozc-deactivate-input-method)
-    (setq boiled-mozc-conv-type :Hiragana)))
+    (setq boiled-mozc-conv-type :Hiragana))
+   ((eq boiled-mozc-conv-type :Hiragana)
+    (japanese-katakana-region boiled-mozc-conv-marker (point))
+    (setq boiled-mozc-conv-type :Katakana))
+   ((eq boiled-mozc-conv-type :Katakana)
+    (delete-region boiled-mozc-conv-marker (point))
+    (insert boiled-mozc-conv-original)
+    (japanese-zenkaku-region boiled-mozc-conv-marker (point))
+    (setq boiled-mozc-conv-type :RomajiZenkaku))
+   ((eq boiled-mozc-conv-type :RomajiZenkaku)
+    (japanese-hankaku-region boiled-mozc-conv-marker (point))
+    (setq boiled-mozc-conv-type nil))
+   ))
 
 
 (provide 'boiled-mozc)
