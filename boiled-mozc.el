@@ -238,8 +238,8 @@ boiled-mozc."
    ((or (not (eq last-command this-command))
 	(null boiled-mozc-conv-type))
     (boiled-mozc-search-beginning)
-    (setq boiled-mozc-running-type :Hiragana)
     (delete-region boiled-mozc-conv-marker (point))
+    (setq boiled-mozc-running-type :Hiragana)
     (activate-input-method boiled-mozc-input-method)
     (mapc #'mozc-handle-event
 	  (vconcat boiled-mozc-conv-original boiled-mozc-commit-key))
