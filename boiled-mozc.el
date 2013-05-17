@@ -227,7 +227,7 @@ and the point with the string kept in `boiled-mozc-conv-original'."
   (activate-input-method boiled-mozc-input-method)
   (mapc #'mozc-handle-event (vconcat boiled-mozc-conv-original))
   (if (and boiled-mozc-smart-trailing-n
-	   (equal (substring boiled-mozc-preedit -1) "ｎ"))
+	   (string= (substring boiled-mozc-preedit -1) "ｎ"))
       (mapc #'mozc-handle-event (vconcat boiled-mozc-smart-trailing-n)))
   (mapc #'mozc-handle-event (vconcat keyvec)))
 
