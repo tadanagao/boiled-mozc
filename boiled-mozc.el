@@ -62,9 +62,6 @@
 ;; that is a version of boiling-egg.el modified for another Japanese
 ;; input method anthy.el.
 
-;; ToDo:
-;; - Better handling of single ending n. (double-nn / append "'" / etc.?)
-
 ;;; Code:
 
 (require 'mozc)
@@ -85,6 +82,15 @@
 (defcustom boiled-mozc-commit-key (kbd "RET")
   "Mozc key sequence to commit Hiragana form."
   :type 'key-sequence
+  :group 'boiled-mozc)
+
+(defcustom boiled-mozc-smart-trailing-n (kbd "'")
+  "Key sequence to be appended to trailing single 'n'.
+
+If non-nil, when a Romaji strip to be converted has a trailing single
+'n', this value will be appended to allow it to be converted to 'ん'."
+  :type '(choice (const :tag "Off" nil)
+		 (key-sequence :tag "Key sequence"))
   :group 'boiled-mozc)
 
 (defcustom boiled-mozc-target-chars "[]'.,a-zA-Z@-"
@@ -220,8 +226,9 @@ and the point with the string kept in `boiled-mozc-conv-original'."
   (delete-region boiled-mozc-conv-marker (point))
   (activate-input-method boiled-mozc-input-method)
   (mapc #'mozc-handle-event (vconcat boiled-mozc-conv-original))
-  (if (equal (substring boiled-mozc-preedit -1) "ｎ")
-      (mozc-handle-event ?'))
+  (if (and boiled-mozc-smart-trailing-n
+	   (equal (substring boiled-mozc-preedit -1) "ｎ"))
+      (mapc #'mozc-handle-event (vconcat boiled-mozc-smart-trailing-n)))
   (mapc #'mozc-handle-event (vconcat keyvec)))
 
 
