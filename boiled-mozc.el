@@ -27,7 +27,7 @@
 ;; Author: Tadaaki Nagao <abtk@shitamachi.org>
 ;; URL: https://github.com/tadanagao/boiled-mozc
 ;; Keywords: mule, multilingual, input method, Japanese
-;; Version: 0.3
+;; Version: 0.4
 
 ;;; Commentary:
 
