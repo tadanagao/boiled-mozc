@@ -215,6 +215,8 @@ boiled-mozc."
     (setq boiled-mozc-conv-original (buffer-substring begin pos))))
 
 (defun boiled-mozc-start-conversion (keyvec)
+  "Start Mozc conversion for a region between `boiled-mozc-conv-marker'
+and the point with the string kept in `boiled-mozc-conv-original'."
   (delete-region boiled-mozc-conv-marker (point))
   (activate-input-method boiled-mozc-input-method)
   (mapc #'mozc-handle-event (vconcat boiled-mozc-conv-original))
