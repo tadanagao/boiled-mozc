@@ -82,7 +82,7 @@
   :type 'key-sequence
   :group 'boiled-mozc)
 
-(defcustom boiled-mozc-commit-key (kbd "<f6> RET")
+(defcustom boiled-mozc-commit-key (kbd "RET")
   "Mozc key sequence to commit Hiragana form."
   :type 'key-sequence
   :group 'boiled-mozc)
@@ -154,7 +154,7 @@ Used to detect when conversion completed.")
 				       (preedit &optional candidates)
 				       activate compile)
   "Catch and keep Mozc's preedit content for later comparison."
-  (if (eq boiled-mozc-running-type :Kanji)
+  (if boiled-mozc-running-type
       (let ((segment (mozc-protobuf-get preedit 'segment)))
 	(setq boiled-mozc-preedit
 	      (apply #'concat
@@ -214,6 +214,14 @@ boiled-mozc."
     (set-marker boiled-mozc-conv-marker begin)
     (setq boiled-mozc-conv-original (buffer-substring begin pos))))
 
+(defun boiled-mozc-start-conversion (keyvec)
+  (delete-region boiled-mozc-conv-marker (point))
+  (activate-input-method boiled-mozc-input-method)
+  (mapc #'mozc-handle-event (vconcat boiled-mozc-conv-original))
+  (if (equal (substring boiled-mozc-preedit -1) "ｎ")
+      (mozc-handle-event ?'))
+  (mapc #'mozc-handle-event (vconcat keyvec)))
+
 
 ;;;; Interactive conversion functions.
 
@@ -224,11 +232,8 @@ boiled-mozc."
   (unless (and (eq last-command 'boiled-mozc-rhkR-conv)
 	       boiled-mozc-conv-type)
     (boiled-mozc-search-beginning))
-  (delete-region boiled-mozc-conv-marker (point))
   (setq boiled-mozc-running-type :Kanji)
-  (activate-input-method boiled-mozc-input-method)
-  (mapc #'mozc-handle-event
-	(vconcat boiled-mozc-conv-original boiled-mozc-convert-key)))
+  (boiled-mozc-start-conversion boiled-mozc-convert-key))
 
 ;;;###autoload
 (defun boiled-mozc-rhkR-conv ()
@@ -238,11 +243,8 @@ boiled-mozc."
    ((or (not (eq last-command this-command))
 	(null boiled-mozc-conv-type))
     (boiled-mozc-search-beginning)
-    (delete-region boiled-mozc-conv-marker (point))
     (setq boiled-mozc-running-type :Hiragana)
-    (activate-input-method boiled-mozc-input-method)
-    (mapc #'mozc-handle-event
-	  (vconcat boiled-mozc-conv-original boiled-mozc-commit-key))
+    (boiled-mozc-start-conversion boiled-mozc-commit-key)
     (boiled-mozc-deactivate-input-method)
     (setq boiled-mozc-conv-type :Hiragana))
    ((eq boiled-mozc-conv-type :Hiragana)
