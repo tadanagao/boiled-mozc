@@ -226,11 +226,11 @@ and the point with the string kept in `boiled-mozc-conv-original' and
 KEYSEQ added to start conversion."
   (delete-region boiled-mozc-conv-marker (point))
   (activate-input-method boiled-mozc-input-method)
-  (mapc #'mozc-handle-event (vconcat boiled-mozc-conv-original))
+  (mapc #'mozc-handle-event boiled-mozc-conv-original)
   (if (and boiled-mozc-smart-trailing-n
 	   (string= (substring boiled-mozc-preedit -1) "ｎ"))
-      (mapc #'mozc-handle-event (vconcat boiled-mozc-smart-trailing-n)))
-  (mapc #'mozc-handle-event (vconcat keyseq)))
+      (mapc #'mozc-handle-event boiled-mozc-smart-trailing-n))
+  (mapc #'mozc-handle-event keyseq))
 
 
 ;;;; Interactive conversion functions.
