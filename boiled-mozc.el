@@ -220,16 +220,17 @@ boiled-mozc."
     (set-marker boiled-mozc-conv-marker begin)
     (setq boiled-mozc-conv-original (buffer-substring begin pos))))
 
-(defun boiled-mozc-start-conversion (keyvec)
+(defun boiled-mozc-start-conversion (keyseq)
   "Start Mozc conversion for a region between `boiled-mozc-conv-marker'
-and the point with the string kept in `boiled-mozc-conv-original'."
+and the point with the string kept in `boiled-mozc-conv-original' and
+KEYSEQ added to start conversion."
   (delete-region boiled-mozc-conv-marker (point))
   (activate-input-method boiled-mozc-input-method)
   (mapc #'mozc-handle-event (vconcat boiled-mozc-conv-original))
   (if (and boiled-mozc-smart-trailing-n
 	   (string= (substring boiled-mozc-preedit -1) "ｎ"))
       (mapc #'mozc-handle-event (vconcat boiled-mozc-smart-trailing-n)))
-  (mapc #'mozc-handle-event (vconcat keyvec)))
+  (mapc #'mozc-handle-event (vconcat keyseq)))
 
 
 ;;;; Interactive conversion functions.
