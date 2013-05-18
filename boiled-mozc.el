@@ -87,8 +87,8 @@
 (defcustom boiled-mozc-smart-trailing-n (kbd "'")
   "Key sequence to be appended to trailing single 'n'.
 
-If non-nil, when a Romaji strip to be converted has a trailing single
-'n', this value will be appended to allow it to be converted to 'ん'."
+If non-nil, the value will be automatically appended to a Romaji strip
+with a trailing single 'n', allowing it to be converted to 'ん'."
   :type '(choice (const :tag "Off" nil)
 		 (key-sequence :tag "Key sequence"))
   :group 'boiled-mozc)
