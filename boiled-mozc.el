@@ -268,7 +268,8 @@ KEYSEQ added to start conversion."
     (japanese-zenkaku-region boiled-mozc-conv-marker (point))
     (setq boiled-mozc-conv-type :RomajiZenkaku))
    ((eq boiled-mozc-conv-type :RomajiZenkaku)
-    (japanese-hankaku-region boiled-mozc-conv-marker (point))
+    (delete-region boiled-mozc-conv-marker (point))
+    (insert boiled-mozc-conv-original)
     (setq boiled-mozc-conv-type nil))
    ))
 
