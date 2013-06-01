@@ -114,8 +114,8 @@ its documentation and `skip-chars-forward' for details on the format."
 
 (defvar boiled-mozc-running-type nil
   "boiled-mozc's running mode while calling mozc.el functions.
-A value of nil means boiled-mozc isn't in effect, :Hiragana means
-Romaji-Hiragana conversion, and :Kanji means Kana-Kanji conversion.")
+A value of nil means boiled-mozc isn't in effect, 'Hiragana means
+Romaji-Hiragana conversion, and 'Kanji means Kana-Kanji conversion.")
 (make-variable-buffer-local 'boiled-mozc-running-type)
 
 (defvar boiled-mozc-conv-original nil
@@ -130,8 +130,8 @@ Kept until the conversion finishes.")
 (defvar boiled-mozc-conv-type nil
   "Indicates the current form in cyclic conversion.
 Its value is maintained in `boiled-mozc-rhkR-conv' and referred to in
-`boiled-mozc-rK-conv'.  Possible values are nil, :Hiragana, :Katakana and
-:RomajiZenkaku.")
+`boiled-mozc-rK-conv'.  Possible values are nil, 'Hiragana, 'Katakana and
+'RomajiZenkaku.")
 (make-variable-buffer-local 'boiled-mozc-conv-type)
 
 (defvar boiled-mozc-preedit nil
@@ -153,7 +153,7 @@ Used to detect when conversion completed.")
 
 (defadvice mozc-candidate-update (around boiled-mozc-hide-candidates activate)
   "Hide the echo-area candidate list while and after conversion."
-  (unless (eq boiled-mozc-running-type :Hiragana)
+  (unless (eq boiled-mozc-running-type 'Hiragana)
     ad-do-it))
 
 (defadvice mozc-preedit-update (before boiled-mozc-preedit-update
@@ -180,7 +180,7 @@ boiled-mozc."
   (let ((begin (point-marker))
 	(prev-preedit boiled-mozc-preedit))
     ad-do-it
-    (when (eq boiled-mozc-running-type :Kanji)
+    (when (eq boiled-mozc-running-type 'Kanji)
       (let ((str (buffer-substring begin (point))))
 	(when (and (> (length str) 0)
 		   (string= prev-preedit str))
@@ -243,7 +243,7 @@ KEYSEQ added to start conversion."
 	       boiled-mozc-conv-type)
     (boiled-mozc-search-beginning))
   (when (> (length boiled-mozc-conv-original) 0)
-    (setq boiled-mozc-running-type :Kanji)
+    (setq boiled-mozc-running-type 'Kanji)
     (boiled-mozc-start-conversion boiled-mozc-convert-key)))
 
 ;;;###autoload
@@ -255,19 +255,19 @@ KEYSEQ added to start conversion."
 	(null boiled-mozc-conv-type))
     (boiled-mozc-search-beginning)
     (when (> (length boiled-mozc-conv-original) 0)
-      (setq boiled-mozc-running-type :Hiragana)
+      (setq boiled-mozc-running-type 'Hiragana)
       (boiled-mozc-start-conversion boiled-mozc-commit-key)
       (boiled-mozc-deactivate-input-method)
-      (setq boiled-mozc-conv-type :Hiragana)))
-   ((eq boiled-mozc-conv-type :Hiragana)
+      (setq boiled-mozc-conv-type 'Hiragana)))
+   ((eq boiled-mozc-conv-type 'Hiragana)
     (japanese-katakana-region boiled-mozc-conv-marker (point))
-    (setq boiled-mozc-conv-type :Katakana))
-   ((eq boiled-mozc-conv-type :Katakana)
+    (setq boiled-mozc-conv-type 'Katakana))
+   ((eq boiled-mozc-conv-type 'Katakana)
     (delete-region boiled-mozc-conv-marker (point))
     (insert boiled-mozc-conv-original)
     (japanese-zenkaku-region boiled-mozc-conv-marker (point))
-    (setq boiled-mozc-conv-type :RomajiZenkaku))
-   ((eq boiled-mozc-conv-type :RomajiZenkaku)
+    (setq boiled-mozc-conv-type 'RomajiZenkaku))
+   ((eq boiled-mozc-conv-type 'RomajiZenkaku)
     (delete-region boiled-mozc-conv-marker (point))
     (insert boiled-mozc-conv-original)
     (setq boiled-mozc-conv-type nil))
