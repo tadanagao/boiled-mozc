@@ -111,8 +111,8 @@ its documentation and `skip-chars-forward' for details on the format."
   "Compatibility with boiling-egg.
 
 If non-nil, a printable ASCII character immediately before the point is
-always skipped and included as a Romaji strip, allowing to conveniently
-convert special conversion rules like 'z/' -> '・'."
+always skipped and included as a Romaji strip, conveniently allowing
+special conversion rules, for example, 'z/' -> '・'."
   :type 'boolean
   :group 'boiled-mozc)
 
