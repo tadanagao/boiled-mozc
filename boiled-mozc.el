@@ -97,13 +97,23 @@ with a trailing single 'n', allowing it to be converted to 'ん'."
   "Characters to be converted to Hiragana or Kana-Kanji.
 
 Boiled-mozc looks for the longest sequence of the specified characters
-ending at the point and hands it over to Mozc.
+ending at the point and hands it over to Mozc as a Romaji strip to be
+converted.
 
 This value is used as an argument of `skip-chars-backward'.  See
 its documentation and `skip-chars-forward' for details on the format."
   :type 'string
   :link '(function-link skip-chars-backward)
   :link '(function-link skip-chars-forward)
+  :group 'boiled-mozc)
+
+(defcustom boiled-mozc-compat-boiling-egg nil
+  "Compatibility with boiling-egg.
+
+If non-nil, a printable ASCII character immediately before the point is
+always skipped and included as a Romaji strip, allowing to conveniently
+convert special conversion rules like 'z/' -> '・'."
+  :type 'boolean
   :group 'boiled-mozc)
 
 
@@ -214,6 +224,8 @@ boiled-mozc."
 			     (not (re-search-backward "[^!-~]" mark t)))
 			(throw 'begin mark)))
 		  (save-excursion
+		    (if boiled-mozc-compat-boiling-egg
+			(re-search-backward "[!-~]" (1- pos) t))
 		    (if (skip-chars-backward boiled-mozc-target-chars bol)
 			(throw 'begin (point))))
 		  pos)))
