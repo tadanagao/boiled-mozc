@@ -155,6 +155,9 @@ Used to detect when conversion completed.")
       'inactivate-input-method
     'deactivate-input-method))
 
+(defvar boiled-mozc-debug nil
+  "Enables debug messages.")
+
 
 ;;;; Wrappers to mozc.el functions.
 
@@ -175,12 +178,17 @@ Used to detect when conversion completed.")
 	(setq boiled-mozc-preedit
 	      (apply #'concat
 		     (mapcar (lambda (x)
-			       (mozc-protobuf-get x 'value)) segment))))))
+			       (mozc-protobuf-get x 'value)) segment)))
+	(if boiled-mozc-debug
+	    (message "[boiled-mozc-preedit-update] <%s>"
+		     boiled-mozc-preedit)))))
 
 (defadvice mozc-preedit-clear (before boiled-mozc-preedit-clear
 				      activate compile)
   "Catch when Mozc's preedit is cleared for later comparison."
-  (setq boiled-mozc-preedit nil))
+  (setq boiled-mozc-preedit nil)
+  (if boiled-mozc-debug
+      (message "[boiled-mozc-preedit-clear]")))
 
 (defadvice mozc-handle-event (around boiled-mozc-handle-event
 				     (event)
@@ -191,7 +199,16 @@ boiled-mozc."
 	(prev-preedit boiled-mozc-preedit))
     ad-do-it
     (when (eq boiled-mozc-running-type 'Kanji)
-      (let ((str (buffer-substring begin (point))))
+      (let* ((pos (point))
+	     (end (if (and (boundp 'mozc-preedit-overlay-temporary-region)
+			   mozc-preedit-overlay-temporary-region
+			   (= pos (cdr mozc-preedit-overlay-temporary-region)))
+		      (car mozc-preedit-overlay-temporary-region)
+		    pos))
+	     (str (buffer-substring begin end)))
+	(if boiled-mozc-debug
+	    (message "[boiled-mozc-handle-event] prev:<%s> str:<%s>"
+		     prev-preedit str))
 	(when (and (> (length str) 0)
 		   (string= prev-preedit str))
 	  ;; Conversion completed
