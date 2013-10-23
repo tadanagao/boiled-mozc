@@ -200,6 +200,8 @@ boiled-mozc."
     ad-do-it
     (when (eq boiled-mozc-running-type 'Kanji)
       (let* ((pos (point))
+	     ;; Skip the single space that mozc.el version 1.11.1502.102
+	     ;; inserts to place an overlay on it.
 	     (end (if (and (boundp 'mozc-preedit-overlay-temporary-region)
 			   mozc-preedit-overlay-temporary-region
 			   (= pos (cdr mozc-preedit-overlay-temporary-region)))
